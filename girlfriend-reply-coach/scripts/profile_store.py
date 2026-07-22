@@ -75,6 +75,24 @@ def self_voice_status(root: str | Path) -> dict[str, Any]:
     }
 
 
+def mark_all_generated_profiles_stale(root: str | Path) -> list[str]:
+    root_path = Path(root).resolve()
+    _ensure_private_root(root_path)
+    people = root_path / "people"
+    if not people.is_dir():
+        return []
+    changed = []
+    for person in sorted(path for path in people.iterdir() if path.is_dir()):
+        generation_path = person / "generation.json"
+        if not generation_path.is_file():
+            continue
+        generation = json.loads(generation_path.read_text(encoding="utf-8"))
+        generation["needs_regeneration"] = True
+        _write_json(generation_path, generation)
+        changed.append(person.name)
+    return changed
+
+
 def _ensure_private_root(root: Path) -> None:
     worktree = _git_worktree_root(root)
     if worktree is not None:

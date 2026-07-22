@@ -46,6 +46,28 @@ class ProfileStoreTests(unittest.TestCase):
             voice.write_text("{broken", encoding="utf-8")
             self.assertEqual("corrupt", module.self_voice_status(root)["status"])
 
+    def test_mark_all_generated_profiles_stale_updates_every_generation_file(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            for slug in ("alice", "bob"):
+                profile = module.create_profile(root, slug, slug)
+                generation_path = profile / "generation.json"
+                generation = json.loads(generation_path.read_text(encoding="utf-8"))
+                generation["needs_regeneration"] = False
+                generation_path.write_text(json.dumps(generation), encoding="utf-8")
+
+            changed = module.mark_all_generated_profiles_stale(root)
+
+            self.assertEqual(["alice", "bob"], changed)
+            for slug in changed:
+                generation = json.loads(
+                    (root / "people" / slug / "generation.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                self.assertTrue(generation["needs_regeneration"])
+
     def test_create_profile_keeps_private_data_outside_skill(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:
