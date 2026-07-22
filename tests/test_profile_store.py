@@ -21,6 +21,31 @@ def load_module():
 
 
 class ProfileStoreTests(unittest.TestCase):
+    def test_self_voice_status_distinguishes_missing_empty_valid_and_corrupt(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            self.assertEqual("missing", module.self_voice_status(root)["status"])
+
+            root.mkdir()
+            voice = root / "self-voice.json"
+            voice.write_text(
+                '{"schema_version": 1, "patterns": []}', encoding="utf-8"
+            )
+            self.assertEqual("empty", module.self_voice_status(root)["status"])
+
+            voice.write_text(
+                json.dumps(
+                    {"schema_version": 1, "patterns": [{"name": "短句"}]},
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual("valid", module.self_voice_status(root)["status"])
+
+            voice.write_text("{broken", encoding="utf-8")
+            self.assertEqual("corrupt", module.self_voice_status(root)["status"])
+
     def test_create_profile_keeps_private_data_outside_skill(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:

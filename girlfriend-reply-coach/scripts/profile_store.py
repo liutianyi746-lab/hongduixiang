@@ -57,6 +57,24 @@ def default_private_root() -> Path:
     return (Path.home() / ".codex" / "private" / "girlfriend-reply-coach").resolve()
 
 
+def self_voice_status(root: str | Path) -> dict[str, Any]:
+    path = Path(root).resolve() / "self-voice.json"
+    if not path.is_file():
+        return {"status": "missing", "path": str(path), "pattern_count": 0}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"status": "corrupt", "path": str(path), "pattern_count": 0}
+    if not isinstance(value, dict) or not isinstance(value.get("patterns"), list):
+        return {"status": "corrupt", "path": str(path), "pattern_count": 0}
+    patterns = [item for item in value["patterns"] if isinstance(item, dict) and item]
+    return {
+        "status": "valid" if patterns else "empty",
+        "path": str(path),
+        "pattern_count": len(patterns),
+    }
+
+
 def _ensure_private_root(root: Path) -> None:
     worktree = _git_worktree_root(root)
     if worktree is not None:
