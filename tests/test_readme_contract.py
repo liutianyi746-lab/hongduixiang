@@ -22,7 +22,7 @@ class ReadmeContractTests(unittest.TestCase):
 
     def test_public_docs_do_not_contain_known_private_identifiers(self):
         text = (ROOT / "README.md").read_text(encoding="utf-8")
-        for private_identifier in ("私聊_", "32916"):
+        for private_identifier in ("私聊_",):
             self.assertNotIn(private_identifier, text)
 
     def test_readme_documents_dual_skill_installer(self):

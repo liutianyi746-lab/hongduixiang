@@ -25,8 +25,8 @@
 运行：
 
 ```powershell
-Compare-Object (Get-Content licenses\goutoujunshi-PolyForm-Noncommercial-1.0.0.txt) (Get-Content C:\Users\32916\.codex\skills\goutoujunshi\LICENSE)
-Compare-Object (Get-Content licenses\create-ex-MIT.txt) (Get-Content C:\Users\32916\.agents\skills\create-ex\LICENSE)
+Compare-Object (Get-Content licenses\goutoujunshi-PolyForm-Noncommercial-1.0.0.txt) (Get-Content "$env:USERPROFILE\.codex\skills\goutoujunshi\LICENSE")
+Compare-Object (Get-Content licenses\create-ex-MIT.txt) (Get-Content "$env:USERPROFILE\.agents\skills\create-ex\LICENSE")
 ```
 
 预期：两条命令均无差异输出。
