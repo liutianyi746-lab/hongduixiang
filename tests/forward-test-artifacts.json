@@ -41,9 +41,9 @@
   },
   {
     "id": 6,
-    "prompt": "她说哼我不管你快夸我；只确认互称小黄/呆佳，我常发短句和😂。",
+    "prompt": "她说哼我不管你快夸我；只确认互称小黄/对象甲，我常发短句和😂。",
     "action": "顺着轻松撒娇，使用已确认称呼与短句。",
-    "direct_reply": "夸夸夸，呆佳连哼都这么可爱😂",
+    "direct_reply": "夸夸夸，对象甲连哼都这么可爱😂",
     "next_step": "她继续撒娇就夸一个当下具体点；只回表情或不回就不硬续。",
     "evaluation": {"sendable": true, "uses_confirmed_voice": true, "no_unverified_pet_name": true}
   },

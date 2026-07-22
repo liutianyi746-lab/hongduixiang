@@ -23,21 +23,21 @@ def load_module():
 class ImportWeFlowTests(unittest.TestCase):
     def test_txt_parses_sender_time_multiline_and_message_kinds(self):
         module = load_module()
-        text = """2025-04-04 21:10:39 '呆佳'
+        text = """2025-04-04 21:10:39 '对象甲'
 第一行
 第二行
 
 2025-04-04 21:11:42 '我'
 [表情包]
 
-2025-04-04 21:15:36 '呆佳'
-\"呆佳\" 撤回了一条消息
+2025-04-04 21:15:36 '对象甲'
+\"对象甲\" 撤回了一条消息
 """
 
         result = module.parse_txt(text)
 
         self.assertEqual(3, len(result.messages))
-        self.assertEqual("呆佳", result.messages[0].sender)
+        self.assertEqual("对象甲", result.messages[0].sender)
         self.assertEqual("第一行\n第二行", result.messages[0].content)
         self.assertEqual("text", result.messages[0].kind)
         self.assertEqual("media", result.messages[1].kind)
@@ -47,7 +47,7 @@ class ImportWeFlowTests(unittest.TestCase):
         module = load_module()
         records = [
             {"timestamp": "2025-04-04 21:10:39", "sender": "我", "content": "你好"},
-            {"time": "2025-04-04 21:11:00", "senderName": "呆佳", "text": "嗯"},
+            {"time": "2025-04-04 21:11:00", "senderName": "对象甲", "text": "嗯"},
             {"timestamp": "2025-04-04 21:12:00", "content": "缺少发送者"},
         ]
 
@@ -76,11 +76,11 @@ class ImportWeFlowTests(unittest.TestCase):
             """2025-04-04 21:10:39 '我'
 真实文字
 
-2025-04-04 21:11:42 '呆佳'
+2025-04-04 21:11:42 '对象甲'
 [表情包]
 
-2025-04-04 21:15:36 '呆佳'
-\"呆佳\" 撤回了一条消息
+2025-04-04 21:15:36 '对象甲'
+\"对象甲\" 撤回了一条消息
 """
         )
 

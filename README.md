@@ -75,7 +75,7 @@ hongduixiang：本人通用语气 + 当前对象专属语气差异
 哄对象乙：<原样粘贴 QQ 或微信聊天>
 ```
 
-计划中的短命令为 `$hong-daijia`（Codex）和 `/hong-daijia`（Claude Code）。聊天中的 `<img src="file://...">` 将只作为图片或表情占位处理，本地绝对路径会被移除，且不会自动打开图片。完整设计见[针对个人的专属回复 Skill 规格](docs/superpowers/specs/2026-07-22-person-specific-reply-skill-design.md)。
+计划中的短命令为 `$hong-partner-a`（Codex）和 `/hong-partner-a`（Claude Code）。聊天中的 `<img src="file://...">` 将只作为图片或表情占位处理，本地绝对路径会被移除，且不会自动打开图片。完整设计见[针对个人的专属回复 Skill 规格](docs/superpowers/specs/2026-07-22-person-specific-reply-skill-design.md)。
 
 > 当前状态：WeFlow TXT、JSON、JSONL 导入、私人人物档案、证据分级和回复工作流已经实现；多人子 Skill 自动生成、QQ/微信原始片段解析、关系专属语气与短命令仍处于设计阶段，尚未作为现成功能发布。
 
