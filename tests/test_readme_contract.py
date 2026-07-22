@@ -25,6 +25,18 @@ class ReadmeContractTests(unittest.TestCase):
         for private_identifier in ("呆佳", "私聊_", "32916"):
             self.assertNotIn(private_identifier, text)
 
+    def test_readme_documents_dual_skill_installer(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for command in (
+            "python install.py --target codex",
+            "python install.py --target claude",
+            "python install.py --target both",
+        ):
+            self.assertIn(command, text)
+        self.assertIn("--force", text)
+        self.assertIn("https://github.com/powerycy/goutoujunshi", text)
+        self.assertIn("PolyForm Noncommercial License 1.0.0", text)
+
 
 if __name__ == "__main__":
     unittest.main()

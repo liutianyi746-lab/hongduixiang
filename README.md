@@ -88,13 +88,58 @@ git clone https://github.com/liutianyi746-lab/hongduixiang.git
 cd hongduixiang
 ```
 
-### Codex CLI / Codex App
+### 一键同时安装两个 Skill（推荐）
 
-将 Skill 复制到个人 Skill 目录：
+同时安装到 Codex 和 Claude Code：
+
+```powershell
+python install.py --target both
+```
+
+只安装到 Codex：
+
+```powershell
+python install.py --target codex
+```
+
+只安装到 Claude Code：
+
+```powershell
+python install.py --target claude
+```
+
+安装器会复制本仓库的 `girlfriend-reply-coach`，并从官方仓库
+[`powerycy/goutoujunshi`](https://github.com/powerycy/goutoujunshi)
+浅克隆独立的 `goutoujunshi`。它会校验两个 `SKILL.md` 后再写入目标目录，不会执行第三方仓库中的脚本。
+
+如果任意目标已经存在，默认会在写入前停止，避免出现只安装一半的状态。确认需要同时覆盖所有已有版本时使用：
+
+```powershell
+python install.py --target both --force
+```
+
+`--force` 会先创建本地备份；任一复制步骤失败时自动恢复所有旧目录。安装完成后请重新启动 Codex、Codex App 或 Claude Code。
+
+> `goutoujunshi` 是独立第三方项目，本项目未获其官方背书。它使用 PolyForm Noncommercial License 1.0.0；使用联动功能时仍须遵守其许可证。
+
+### 手动安装（故障排查）
+
+手动安装时必须分别安装两个 Skill。先将 `girlfriend-reply-coach` 复制到相应目录，再从 `https://github.com/powerycy/goutoujunshi` 获取 `goutoujunshi` 并把其 Skill 目录复制到同一 `skills` 目录下。不要把第三方源码提交进本仓库。
+
+#### Codex CLI / Codex App
+
+本项目 Skill 的手动复制命令：
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\.codex\skills" | Out-Null
 Copy-Item -Recurse -Force ".\girlfriend-reply-coach" "$HOME\.codex\skills\girlfriend-reply-coach"
+```
+
+最终应同时存在：
+
+```text
+~/.codex/skills/girlfriend-reply-coach/SKILL.md
+~/.codex/skills/goutoujunshi/SKILL.md
 ```
 
 在 Codex 中直接提及 Skill 名称即可：
@@ -114,13 +159,20 @@ Copy-Item -Recurse -Force ".\girlfriend-reply-coach" "$HOME\.codex\skills\girlfr
 要求：只改成我的语气，不改变责任和原意。
 ```
 
-### Claude Code CLI
+#### Claude Code CLI
 
-Claude Code 支持相同的 `SKILL.md` 结构。将目录复制到个人 Skills：
+Claude Code 支持相同的 `SKILL.md` 结构。本项目 Skill 的手动复制命令：
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
 Copy-Item -Recurse -Force ".\girlfriend-reply-coach" "$HOME\.claude\skills\girlfriend-reply-coach"
+```
+
+最终应同时存在：
+
+```text
+~/.claude/skills/girlfriend-reply-coach/SKILL.md
+~/.claude/skills/goutoujunshi/SKILL.md
 ```
 
 启动 Claude Code：
