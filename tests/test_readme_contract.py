@@ -48,6 +48,18 @@ class ReadmeContractTests(unittest.TestCase):
         ):
             self.assertIn(required, text)
 
+    def test_readme_documents_first_run_voice_onboarding(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for required in (
+            "首次调用",
+            "导入 TXT / JSON / JSONL 聊天记录",
+            "直接粘贴几段聊天",
+            "暂时跳过，使用自然的中性口语",
+            "本次未使用个人语气档案",
+            "重新学习我的语气",
+        ):
+            self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()
