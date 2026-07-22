@@ -6,3 +6,4 @@ girlfriend-reply-coach/private/
 girlfriend-reply-coach/imports/
 __pycache__/
 *.pyc
+.worktrees/
