@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Callable
 
 
-SKILL_NAMES = ("girlfriend-reply-coach", "goutoujunshi")
+SKILL_NAMES = ("girlfriend-reply-coach", "create-hong", "goutoujunshi")
 ENVIRONMENT_DIRS = {"codex": ".codex", "claude": ".claude"}
 
 
@@ -87,12 +87,16 @@ def install_sources(
     *,
     force: bool,
     copytree: Callable[[Path, Path], Path] = shutil.copytree,
+    creator_skill: Path | None = None,
 ) -> tuple[Path, ...]:
     _validate_targets(targets)
     if _skill_name(local_skill / "SKILL.md") != "girlfriend-reply-coach":
         raise InstallError("本地 SKILL.md 的 name 必须等于 girlfriend-reply-coach")
     if _skill_name(goutoujunshi_skill / "SKILL.md") != "goutoujunshi":
         raise InstallError("第三方 SKILL.md 的 name 必须等于 goutoujunshi")
+    creator = creator_skill or local_skill.parent / "create-hong"
+    if _skill_name(creator / "SKILL.md") != "create-hong":
+        raise InstallError("本地 SKILL.md 的 name 必须等于 create-hong")
 
     conflicts = [target for target in targets.values() if target.exists()]
     if conflicts and not force:
@@ -105,6 +109,7 @@ def install_sources(
     installed: list[Path] = []
     sources = {
         "girlfriend-reply-coach": local_skill,
+        "create-hong": creator,
         "goutoujunshi": goutoujunshi_skill,
     }
 
@@ -182,6 +187,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         repository_root = Path(__file__).resolve().parent
         local_skill = repository_root / "girlfriend-reply-coach"
+        creator_skill = repository_root / "create-hong"
         if not (local_skill / "SKILL.md").is_file():
             raise InstallError(f"找不到本地 girlfriend-reply-coach/SKILL.md：{local_skill}")
         targets = installation_targets(Path.home(), args.target)
@@ -202,6 +208,7 @@ def main(argv: list[str] | None = None) -> int:
                 goutoujunshi_skill,
                 targets,
                 force=args.force,
+                creator_skill=creator_skill,
             )
         print("安装成功：")
         for path in installed:

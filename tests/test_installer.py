@@ -34,9 +34,9 @@ class InstallerPlanningTests(unittest.TestCase):
         claude = module.installation_targets(home, "claude")
         both = module.installation_targets(home, "both")
 
-        self.assertEqual(2, len(codex))
-        self.assertEqual(2, len(claude))
-        self.assertEqual(4, len(both))
+        self.assertEqual(3, len(codex))
+        self.assertEqual(3, len(claude))
+        self.assertEqual(6, len(both))
         self.assertEqual(
             home / ".codex" / "skills" / "goutoujunshi",
             codex["codex:goutoujunshi"],
@@ -44,6 +44,10 @@ class InstallerPlanningTests(unittest.TestCase):
         self.assertEqual(
             home / ".claude" / "skills" / "girlfriend-reply-coach",
             claude["claude:girlfriend-reply-coach"],
+        )
+        self.assertEqual(
+            home / ".codex" / "skills" / "create-hong",
+            codex["codex:create-hong"],
         )
 
     def test_targets_reject_unknown_target(self):
@@ -92,11 +96,16 @@ class TransactionalInstallTests(unittest.TestCase):
             "goutoujunshi",
             "new goutou",
         )
+        self.creator = write_skill(
+            self.root / "sources" / "create-hong",
+            "create-hong",
+            "new creator",
+        )
 
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_installs_both_skills_into_both_environments(self):
+    def test_installs_all_three_skills_into_both_environments(self):
         targets = self.module.installation_targets(self.home, "both")
 
         installed = self.module.install_sources(

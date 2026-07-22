@@ -37,6 +37,17 @@ class ReadmeContractTests(unittest.TestCase):
         self.assertIn("https://github.com/powerycy/goutoujunshi", text)
         self.assertIn("PolyForm Noncommercial License 1.0.0", text)
 
+    def test_readme_documents_profile_first_generated_skill_flow(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for required in (
+            "先建档",
+            "create-hong",
+            "/hong-<slug>",
+            "confirmation_hash",
+            "不得把 `/hong-<slug>` 当作临时对象切换命令",
+        ):
+            self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()

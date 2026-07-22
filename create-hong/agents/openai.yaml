@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Hong"
+  short_description: "Build a profile-gated person-specific reply Skill"
+  default_prompt: "Use $create-hong to import authorized chat evidence, confirm sender mapping, preview the private voice profiles, and generate a bound hong-<slug> Skill only after I approve the current summary."
