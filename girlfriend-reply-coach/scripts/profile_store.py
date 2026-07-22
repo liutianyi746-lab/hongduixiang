@@ -77,9 +77,28 @@ def create_profile(root: str | Path, slug: str, alias: str) -> Path:
             {
                 "schema_version": 1,
                 "alias": alias,
+                "authorization": {"confirmed": False},
+                "sender_mapping": {"self": [], "partner": []},
+                "text_message_counts": {"self": 0, "partner": 0},
                 "created_at": created_at,
                 "updated_at": created_at,
                 "claims": [],
+            },
+        )
+    generation_path = profile_dir / "generation.json"
+    if not generation_path.exists():
+        _write_json(
+            generation_path,
+            {
+                "schema_version": 1,
+                "slug": safe_slug,
+                "skill_name": f"hong-{safe_slug}",
+                "profile_version": None,
+                "confirmed_summary_hash": None,
+                "generated_at": None,
+                "install_targets": [],
+                "skill_paths": [],
+                "needs_regeneration": True,
             },
         )
     voice_delta_path = profile_dir / "voice-delta.json"
