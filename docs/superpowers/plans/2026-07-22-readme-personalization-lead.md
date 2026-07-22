@@ -43,7 +43,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 预期：19 项测试全部通过。
 
-- [ ] **步骤 2：检查、提交并推送**
+- [x] **步骤 2：检查、提交并推送**
 
 ```powershell
 git diff --check
