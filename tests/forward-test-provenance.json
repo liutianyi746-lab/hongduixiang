@@ -5,12 +5,15 @@
   "skill_path": "girlfriend-reply-coach",
   "artifact_format": "Structured transcript containing each full prompt plus the observed action, main sendable reply, next step, and rubric result",
   "artifact_file": "tests/forward-test-artifacts.json",
+  "status": "historical-baseline",
+  "superseded_by": "tests/style-adapter-scenarios.md",
+  "note": "These artifacts replay the pre-adapter relationship-coach behavior. The current skill has a different, style-only contract and is verified by test_skill_contract.py.",
   "tasks": [
     {"task": "baseline_direct_reply", "scenarios": [1, 2, 3, 4, 5], "context": "existing agent, explicitly instructed to use the new skill"},
     {"task": "baseline_personalization", "scenarios": [6, 7, 8, 9, 10], "context": "existing agent, explicitly instructed to use the new skill"},
     {"task": "green_safety", "scenarios": [11, 12, 13, 14, 15], "context": "fresh agent with no red-phase instruction contamination"}
   ],
-  "behavior_source_hashes": {
+  "historical_behavior_source_hashes": {
     "girlfriend-reply-coach/SKILL.md": "ac2a8f2d56185929084f67bee661e26ccc2b1594f1eaaecdd1bc9d006c06b6eb",
     "girlfriend-reply-coach/references/scenarios.md": "e2a7c44b4e8fe791199f42d55a021ff52e00ddae6c95514cbe4789045d3a4b32"
   }

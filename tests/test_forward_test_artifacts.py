@@ -19,10 +19,21 @@ class ForwardTestArtifactTests(unittest.TestCase):
         cls.cases = json.loads(ARTIFACTS.read_text(encoding="utf-8"))
         cls.provenance = json.loads(PROVENANCE.read_text(encoding="utf-8"))
 
-    def test_artifacts_match_the_exact_behavior_sources_that_were_forward_tested(self):
-        for relative_path, expected_hash in self.provenance[
-            "behavior_source_hashes"
-        ].items():
+    def test_historical_artifacts_are_not_presented_as_current_skill_validation(self):
+        self.assertEqual("historical-baseline", self.provenance["status"])
+        self.assertEqual(
+            "tests/style-adapter-scenarios.md", self.provenance["superseded_by"]
+        )
+        hashes = self.provenance["historical_behavior_source_hashes"]
+        current_skill_hash = _sha256_normalized_text(
+            (ROOT / "girlfriend-reply-coach/SKILL.md").read_bytes()
+        )
+        self.assertNotEqual(hashes["girlfriend-reply-coach/SKILL.md"], current_skill_hash)
+
+    def test_unchanged_historical_scenario_source_keeps_its_provenance_hash(self):
+        hashes = self.provenance["historical_behavior_source_hashes"]
+        for relative_path in ("girlfriend-reply-coach/references/scenarios.md",):
+            expected_hash = hashes[relative_path]
             with self.subTest(path=relative_path):
                 actual_hash = _sha256_normalized_text(
                     (ROOT / relative_path).read_bytes()
@@ -30,7 +41,7 @@ class ForwardTestArtifactTests(unittest.TestCase):
                 self.assertEqual(
                     expected_hash,
                     actual_hash,
-                    "行为源文件已改变；必须重新运行 15 个前向场景并更新测试工件",
+                    "历史场景源文件已改变；必须重新运行旧版回放或更新历史工件",
                 )
 
     def test_behavior_source_hash_ignores_platform_line_endings(self):
