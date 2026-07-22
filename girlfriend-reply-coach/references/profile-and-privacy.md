@@ -8,7 +8,9 @@
 ~/.codex/private/girlfriend-reply-coach/
 ├─ manifest.json
 ├─ self-voice.json
-├─ people/<slug>/profile.json
+├─ people/<slug>/
+│  ├─ profile.json
+│  └─ voice-delta.json
 ├─ derived/<slug>/
 └─ raw/                         # 仅在用户明确选择保留时创建
 ```
@@ -27,6 +29,18 @@
 - 每项模式的证据、置信度和更新时间。
 
 不要把女朋友的说话风格混入本人语气档案。
+
+## 对象专属语气差异
+
+`people/<slug>/voice-delta.json` 只记录用户相对于通用语气、面对该对象时特有的表达：
+
+- 专属称呼及明确禁用称呼；
+- 亲密程度、撒娇程度和玩笑尺度；
+- 只在这段关系中使用的语气词、表情和梗；
+- 对正式道歉、日常闲聊等场景的关系专属差异；
+- 每项模式的证据、置信度、适用情境和更新时间。
+
+它不保存关系策略、对方人格诊断或 `goutoujunshi` 的资料。不同对象的差异档案按 `slug` 隔离，不得交叉使用。
 
 ## 女朋友档案
 
@@ -64,7 +78,7 @@
 4. 记录新证据和更新时间；
 5. 只有用户确认或后续证据充分时才解决冲突。
 
-用户纠正时，先复述准备修改的内容。人物事实纠正进入 `profile.json`；本人说话方式纠正进入 `self-voice.json`。
+用户纠正时，先复述准备修改的内容。人物事实纠正进入 `profile.json`；跨对象稳定的本人说话方式进入 `self-voice.json`；只对当前对象成立的表达进入对应 `voice-delta.json`。
 
 ## 创建与删除
 

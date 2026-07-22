@@ -1,4 +1,4 @@
 interface:
   display_name: "Girlfriend Reply Coach"
-  short_description: "Personalized relationship reply coaching"
-  default_prompt: "Use $girlfriend-reply-coach to analyze this conversation and give me a reply I can send."
+  short_description: "Rewrite relationship replies in your own voice"
+  default_prompt: "Use $goutoujunshi for the relationship strategy, then use $girlfriend-reply-coach to faithfully rewrite its draft in my voice for the specified person."
