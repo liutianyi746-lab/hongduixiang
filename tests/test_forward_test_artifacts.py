@@ -9,6 +9,10 @@ PROVENANCE = Path(__file__).with_name("forward-test-provenance.json")
 ROOT = Path(__file__).parents[1]
 
 
+def _sha256_normalized_text(content: bytes) -> str:
+    return hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
+
+
 class ForwardTestArtifactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -20,12 +24,19 @@ class ForwardTestArtifactTests(unittest.TestCase):
             "behavior_source_hashes"
         ].items():
             with self.subTest(path=relative_path):
-                actual_hash = hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()
+                actual_hash = _sha256_normalized_text(
+                    (ROOT / relative_path).read_bytes()
+                )
                 self.assertEqual(
                     expected_hash,
                     actual_hash,
                     "行为源文件已改变；必须重新运行 15 个前向场景并更新测试工件",
                 )
+
+    def test_behavior_source_hash_ignores_platform_line_endings(self):
+        lf = b"first line\nsecond line\n"
+        crlf = b"first line\r\nsecond line\r\n"
+        self.assertEqual(_sha256_normalized_text(lf), _sha256_normalized_text(crlf))
 
     def test_all_fifteen_required_scenarios_have_replayable_artifacts(self):
         self.assertEqual(list(range(1, 16)), sorted(case["id"] for case in self.cases))
