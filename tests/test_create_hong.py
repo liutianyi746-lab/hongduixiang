@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -120,6 +121,84 @@ class ThinSkillTests(unittest.TestCase):
             self.assertNotIn(str(root), combined)
             self.assertNotIn("new secret chat", combined)
             self.assertEqual({"SKILL.md", "binding.json"}, {p.name for p in destination.iterdir()})
+
+
+class GeneratedInstallTests(unittest.TestCase):
+    def test_generated_targets_support_each_environment(self):
+        module = load_module()
+        home = Path("/home/example")
+        self.assertEqual(1, len(module.generated_targets(home, "xiaoyu", "codex")))
+        self.assertEqual(1, len(module.generated_targets(home, "xiaoyu", "claude")))
+        both = module.generated_targets(home, "xiaoyu", "both")
+        self.assertEqual(2, len(both))
+        self.assertEqual(home / ".codex/skills/hong-xiaoyu", both["codex"])
+
+    def test_generate_installs_both_and_records_generation(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            private = base / "private"
+            home = base / "home"
+            valid_profile(private)
+            confirmation = module.summary_hash(module.build_summary(private, "xiaoyu"))
+
+            installed = module.generate_for_profile(
+                private, home, "xiaoyu", confirmation, "both", force=False
+            )
+
+            self.assertEqual(2, len(installed))
+            for path in installed:
+                self.assertTrue((path / "SKILL.md").is_file())
+            generation = json.loads(
+                (private / "people/xiaoyu/generation.json").read_text(encoding="utf-8")
+            )
+            self.assertFalse(generation["needs_regeneration"])
+            self.assertEqual(["codex", "claude"], generation["install_targets"])
+            self.assertEqual(module.profile_version(private, "xiaoyu"), generation["profile_version"])
+
+    def test_default_conflict_makes_no_changes(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            private = base / "private"
+            home = base / "home"
+            valid_profile(private)
+            confirmation = module.summary_hash(module.build_summary(private, "xiaoyu"))
+            existing = home / ".claude/skills/hong-xiaoyu"
+            existing.mkdir(parents=True)
+            (existing / "old.txt").write_text("old", encoding="utf-8")
+
+            with self.assertRaisesRegex(module.GenerationError, "已存在"):
+                module.generate_for_profile(
+                    private, home, "xiaoyu", confirmation, "both", force=False
+                )
+            self.assertTrue((existing / "old.txt").is_file())
+            self.assertFalse((home / ".codex/skills/hong-xiaoyu").exists())
+
+    def test_force_failure_restores_all_old_skills(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            home = base / "home"
+            targets = module.generated_targets(home, "xiaoyu", "both")
+            for environment, path in targets.items():
+                path.mkdir(parents=True)
+                (path / "old.txt").write_text(environment, encoding="utf-8")
+            source = base / "source"
+            module.write_thin_skill(source, "xiaoyu", "version")
+            calls = 0
+
+            def failing_copy(source_path, destination):
+                nonlocal calls
+                calls += 1
+                if calls == 2:
+                    raise OSError("copy failed")
+                return shutil.copytree(source_path, destination)
+
+            with self.assertRaisesRegex(module.GenerationError, "copy failed"):
+                module.install_generated_skill(source, targets, force=True, copytree=failing_copy)
+            for environment, path in targets.items():
+                self.assertEqual(environment, (path / "old.txt").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
