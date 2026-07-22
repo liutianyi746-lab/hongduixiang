@@ -1,0 +1,8 @@
+# Private relationship data must never enter this repository.
+.private/
+private-data/
+girlfriend-reply-coach-data/
+girlfriend-reply-coach/private/
+girlfriend-reply-coach/imports/
+__pycache__/
+*.pyc

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Girlfriend Reply Coach"
+  short_description: "Personalized relationship reply coaching"
+  default_prompt: "Use $girlfriend-reply-coach to analyze this conversation and give me a reply I can send."

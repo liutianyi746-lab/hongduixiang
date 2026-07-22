@@ -1,0 +1,149 @@
+import importlib.util
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+
+MODULE_PATH = (
+    Path(__file__).parents[1]
+    / "girlfriend-reply-coach"
+    / "scripts"
+    / "profile_store.py"
+)
+
+
+def load_module():
+    spec = importlib.util.spec_from_file_location("profile_store", MODULE_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+class ProfileStoreTests(unittest.TestCase):
+    def test_create_profile_keeps_private_data_outside_skill(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            profile_dir = module.create_profile(root, "current", "女朋友代号")
+
+            self.assertTrue((profile_dir / "profile.json").exists())
+            self.assertTrue((root / "self-voice.json").exists())
+            self.assertTrue((root / "manifest.json").exists())
+            profile = json.loads((profile_dir / "profile.json").read_text(encoding="utf-8"))
+            self.assertEqual("女朋友代号", profile["alias"])
+            self.assertEqual([], profile["claims"])
+
+    def test_add_claim_requires_evidence_class_and_preserves_conflicts(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            profile_dir = module.create_profile(root, "current", "女朋友代号")
+
+            first_id = module.add_claim(
+                profile_dir,
+                content="难过时更希望先被倾听",
+                classification="高置信度模式",
+                evidence=["聊天片段 A", "聊天片段 B"],
+                confidence=0.85,
+                contexts=["工作受挫", "家庭压力"],
+            )
+            second_id = module.add_claim(
+                profile_dir,
+                content="难过时更希望直接给建议",
+                classification="待验证推测",
+                evidence=["聊天片段 C"],
+                confidence=0.35,
+                contexts=["身体不适"],
+                conflicts_with=[first_id, first_id],
+            )
+
+            profile = module.read_profile(profile_dir)
+            self.assertEqual(2, len(profile["claims"]))
+            self.assertIn(first_id, profile["claims"][1]["conflicts_with"])
+            self.assertEqual(second_id, profile["claims"][1]["id"])
+            self.assertIn(second_id, profile["claims"][0]["conflicts_with"])
+            self.assertEqual(0.70, profile["claims"][0]["confidence"])
+            self.assertEqual(0.20, profile["claims"][1]["confidence"])
+            self.assertEqual([first_id], profile["claims"][1]["conflicts_with"])
+
+            with self.assertRaises(ValueError):
+                module.add_claim(
+                    profile_dir,
+                    content="无依据判断",
+                    classification="确定人格",
+                    evidence=[],
+                    confidence=1.0,
+                    contexts=[],
+                )
+
+            with self.assertRaisesRegex(ValueError, "独立情境"):
+                module.add_claim(
+                    profile_dir,
+                    content="只在一个场景出现",
+                    classification="高置信度模式",
+                    evidence=["聊天片段 D", "聊天片段 E"],
+                    confidence=0.8,
+                    contexts=["同一场景"],
+                )
+
+    def test_create_profile_rejects_git_worktree_storage(self):
+        module = load_module()
+        repository_private_root = Path(__file__).parents[1] / "private-data-test"
+        with self.assertRaisesRegex(ValueError, "Git"):
+            module.create_profile(repository_private_root, "current", "女朋友代号")
+
+    def test_add_claim_rejects_manually_created_profile_inside_git_worktree(self):
+        module = load_module()
+        repository_root = Path(__file__).parents[1]
+        with tempfile.TemporaryDirectory(dir=repository_root) as tmp:
+            profile_dir = Path(tmp)
+            (profile_dir / "profile.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "alias": "测试",
+                        "created_at": "2026-07-22T00:00:00+00:00",
+                        "updated_at": "2026-07-22T00:00:00+00:00",
+                        "claims": [],
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "Git"):
+                module.add_claim(
+                    profile_dir,
+                    content="不得写入",
+                    classification="已确认事实",
+                    evidence=["测试证据"],
+                    confidence=1.0,
+                    contexts=["测试情境"],
+                )
+
+    def test_delete_profile_removes_profile_and_derived_data_only_inside_root(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            profile_dir = module.create_profile(root, "current", "女朋友代号")
+            derived_dir = root / "derived" / "current"
+            derived_dir.mkdir(parents=True)
+            (derived_dir / "summary.json").write_text("{}", encoding="utf-8")
+            raw_dir = root / "raw" / "current"
+            raw_dir.mkdir(parents=True)
+            (raw_dir / "chat.txt").write_text("private", encoding="utf-8")
+            outside = Path(tmp) / "keep.txt"
+            outside.write_text("keep", encoding="utf-8")
+
+            plan = module.deletion_plan(root, "current")
+            module.delete_profile(root, "current", plan["confirmation_token"])
+
+            self.assertFalse(profile_dir.exists())
+            self.assertFalse(derived_dir.exists())
+            self.assertFalse(raw_dir.exists())
+            self.assertTrue(outside.exists())
+
+
+if __name__ == "__main__":
+    unittest.main()
