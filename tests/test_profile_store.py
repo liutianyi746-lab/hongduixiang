@@ -30,9 +30,34 @@ class ProfileStoreTests(unittest.TestCase):
             self.assertTrue((profile_dir / "profile.json").exists())
             self.assertTrue((root / "self-voice.json").exists())
             self.assertTrue((root / "manifest.json").exists())
+            voice_delta = profile_dir / "voice-delta.json"
+            self.assertTrue(voice_delta.exists())
             profile = json.loads((profile_dir / "profile.json").read_text(encoding="utf-8"))
+            delta = json.loads(voice_delta.read_text(encoding="utf-8"))
+            manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
             self.assertEqual("女朋友代号", profile["alias"])
             self.assertEqual([], profile["claims"])
+            self.assertEqual("current", delta["person_id"])
+            self.assertEqual([], delta["patterns"])
+            self.assertEqual(
+                "people/current/voice-delta.json",
+                manifest["profiles"]["current"]["voice_delta_path"],
+            )
+
+    def test_create_profiles_keeps_voice_deltas_isolated_by_person(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-data"
+            alice = module.create_profile(root, "alice", "对象甲")
+            bob = module.create_profile(root, "bob", "对象乙")
+
+            alice_delta_path = alice / "voice-delta.json"
+            bob_delta_path = bob / "voice-delta.json"
+            self.assertNotEqual(alice_delta_path, bob_delta_path)
+            alice_delta = json.loads(alice_delta_path.read_text(encoding="utf-8"))
+            bob_delta = json.loads(bob_delta_path.read_text(encoding="utf-8"))
+            self.assertEqual("alice", alice_delta["person_id"])
+            self.assertEqual("bob", bob_delta["person_id"])
 
     def test_add_claim_requires_evidence_class_and_preserves_conflicts(self):
         module = load_module()

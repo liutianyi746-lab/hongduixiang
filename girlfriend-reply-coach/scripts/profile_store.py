@@ -82,6 +82,18 @@ def create_profile(root: str | Path, slug: str, alias: str) -> Path:
                 "claims": [],
             },
         )
+    voice_delta_path = profile_dir / "voice-delta.json"
+    if not voice_delta_path.exists():
+        _write_json(
+            voice_delta_path,
+            {
+                "schema_version": 1,
+                "person_id": safe_slug,
+                "updated_at": created_at,
+                "patterns": [],
+                "corrections": [],
+            },
+        )
     self_voice = root_path / "self-voice.json"
     if not self_voice.exists():
         _write_json(
@@ -97,6 +109,7 @@ def create_profile(root: str | Path, slug: str, alias: str) -> Path:
     manifest["profiles"][safe_slug] = {
         "alias": alias,
         "path": f"people/{safe_slug}/profile.json",
+        "voice_delta_path": f"people/{safe_slug}/voice-delta.json",
         "updated_at": created_at,
     }
     _write_json(manifest_path, manifest)
