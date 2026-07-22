@@ -13,6 +13,44 @@ PROFILE_SCRIPT = ROOT / "girlfriend-reply-coach" / "scripts" / "profile_store.py
 
 
 class ScriptCliTests(unittest.TestCase):
+    def test_profile_cli_reports_voice_status_for_first_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private"
+            result = subprocess.run(
+                [
+                    str(PYTHON),
+                    str(PROFILE_SCRIPT),
+                    "voice-status",
+                    "--root",
+                    str(root),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+
+            self.assertEqual("missing", json.loads(result.stdout)["status"])
+
+    def test_profile_cli_marks_all_generated_profiles_stale(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private"
+            result = subprocess.run(
+                [
+                    str(PYTHON),
+                    str(PROFILE_SCRIPT),
+                    "mark-all-stale",
+                    "--root",
+                    str(root),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+
+            self.assertEqual({"marked_stale": []}, json.loads(result.stdout))
+
     def test_import_cli_prints_summary_without_message_content_by_default(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "chat.txt"

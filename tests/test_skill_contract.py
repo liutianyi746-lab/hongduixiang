@@ -46,6 +46,21 @@ class SkillContractTests(unittest.TestCase):
         ):
             self.assertIn(required, text)
 
+    def test_first_run_offers_import_paste_or_neutral_voice(self):
+        coach = SKILL.read_text(encoding="utf-8")
+        creator = CREATOR_SKILL.read_text(encoding="utf-8")
+        for required in (
+            "self_voice_status",
+            "导入 TXT / JSON / JSONL 聊天记录",
+            "直接粘贴几段聊天",
+            "暂时跳过，使用自然的中性口语",
+            "本次未使用个人语气档案",
+            "重新学习我的语气",
+        ):
+            self.assertIn(required, coach)
+        self.assertIn("self_voice_status", creator)
+        self.assertIn("不得因为本人语气档案有效而跳过对象建档", creator)
+
 
 if __name__ == "__main__":
     unittest.main()

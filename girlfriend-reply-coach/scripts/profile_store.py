@@ -273,6 +273,12 @@ def main() -> int:
     create_parser.add_argument("--slug", required=True)
     create_parser.add_argument("--alias", required=True)
 
+    status_parser = subparsers.add_parser("voice-status")
+    status_parser.add_argument("--root", type=Path, default=default_private_root())
+
+    stale_parser = subparsers.add_parser("mark-all-stale")
+    stale_parser.add_argument("--root", type=Path, default=default_private_root())
+
     preview_parser = subparsers.add_parser("preview-delete")
     preview_parser.add_argument("--root", type=Path, default=default_private_root())
     preview_parser.add_argument("--slug", required=True)
@@ -286,6 +292,17 @@ def main() -> int:
     if args.command == "create":
         profile_dir = create_profile(args.root, args.slug, args.alias)
         print(json.dumps({"profile_dir": str(profile_dir)}, ensure_ascii=False))
+        return 0
+    if args.command == "voice-status":
+        print(json.dumps(self_voice_status(args.root), ensure_ascii=False))
+        return 0
+    if args.command == "mark-all-stale":
+        print(
+            json.dumps(
+                {"marked_stale": mark_all_generated_profiles_stale(args.root)},
+                ensure_ascii=False,
+            )
+        )
         return 0
     if args.command == "preview-delete":
         print(json.dumps(deletion_plan(args.root, args.slug), ensure_ascii=False))
