@@ -9,7 +9,7 @@
 - 许可：PolyForm Noncommercial License 1.0.0
 - 许可原文：[licenses/goutoujunshi-PolyForm-Noncommercial-1.0.0.txt](licenses/goutoujunshi-PolyForm-Noncommercial-1.0.0.txt)
 
-本项目参考了其“情绪支持、事实与推测分离、关系判断、行动建议和后续接话”等方法。为保守处理潜在的衍生作品问题，本项目当前仅按非商业用途发布；商业使用前应自行确认许可范围并取得必要授权。
+本项目只在运行时调用用户独立安装的 `goutoujunshi`，由其提供关系判断和原始话术；本仓库不复制、改编或内置其理论资料、提示词和话术库。使用联动功能时，使用者仍须分别遵守 `goutoujunshi` 的许可证；商业使用前应自行确认适用范围并取得必要授权。
 
 Required Notice: Copyright 2026 powerycy.
 
@@ -20,7 +20,7 @@ Required Notice: Copyright 2026 powerycy.
 - 许可：MIT License
 - 许可原文：[licenses/create-ex-MIT.txt](licenses/create-ex-MIT.txt)
 
-本项目参考了从经授权材料中提取关系记忆、人物表达模式并通过用户纠正持续更新的方法。当前仓库没有复制或捆绑 `create-ex` 的解析器、提示词目录或其他工具代码。
+本项目没有复制或捆绑 `create-ex` 的解析器、提示词目录或其他工具代码。聊天导入、本人语气档案和对象专属语气差异由本项目独立实现。
 
 ## WeFlow
 
