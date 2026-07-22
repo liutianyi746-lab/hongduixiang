@@ -143,3 +143,48 @@ def generation_issues(
     if not confirmed_summary_hash or confirmed_summary_hash != current_hash:
         issues.append("用户确认摘要哈希与当前档案不一致")
     return issues
+
+
+def render_thin_skill(slug: str, expected_profile_version: str) -> dict[str, str]:
+    validate_slug(slug)
+    skill_name = f"hong-{slug}"
+    skill = f"""---
+name: {skill_name}
+description: Use when 用户已经完成本地建档并明确调用 {skill_name} 处理该绑定对象的当前聊天。
+---
+
+# {skill_name}
+
+本 Skill 固定绑定 `{slug}`，不得切换、猜测或回退到其他对象。
+
+## 运行门槛
+
+1. 按 `GIRLFRIEND_REPLY_COACH_DATA` 环境变量或默认私有目录解析档案根目录。
+2. 读取本目录 `binding.json`，并检查对应 `profile.json`、`voice-delta.json`、共享 `self-voice.json` 和 `generation.json`。
+3. 档案组合版本必须等于 `{expected_profile_version}`，且 `needs_regeneration` 必须为 `false`。
+4. 任一条件不满足就停止，提示运行 `/create-hong {slug}` 或 `/update-hong {slug}`；不得生成临时回复。
+
+## 联动
+
+门槛通过后，必须先使用 `goutoujunshi` 生成关系判断和原始话术，再建立事实、责任、边界、承诺、行动及安全提示的语义锁。只使用本人通用语气和 `{slug}` 对应的对象专属语气进行忠实改写。
+
+不得改变原意、泄露私人档案、冒充对象、混用其他人物资料或弱化安全提示。
+"""
+    binding = {
+        "schema_version": 1,
+        "slug": slug,
+        "expected_profile_version": expected_profile_version,
+        "private_root_resolution": "environment-or-default",
+    }
+    return {
+        "SKILL.md": skill,
+        "binding.json": json.dumps(binding, ensure_ascii=False, indent=2) + "\n",
+    }
+
+
+def write_thin_skill(destination: Path, slug: str, expected_profile_version: str) -> Path:
+    rendered = render_thin_skill(slug, expected_profile_version)
+    destination.mkdir(parents=True, exist_ok=False)
+    for name, content in rendered.items():
+        (destination / name).write_text(content, encoding="utf-8")
+    return destination

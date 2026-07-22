@@ -91,5 +91,36 @@ class ProfileGateTests(unittest.TestCase):
             self.assertIn("对象文本", joined)
 
 
+class ThinSkillTests(unittest.TestCase):
+    def test_rendered_skill_is_bound_and_forbids_fallback(self):
+        module = load_module()
+        rendered = module.render_thin_skill("xiaoyu", "version-123")
+        skill = rendered["SKILL.md"]
+        binding = json.loads(rendered["binding.json"])
+        self.assertIn("name: hong-xiaoyu", skill)
+        self.assertIn("goutoujunshi", skill)
+        self.assertIn("固定绑定 `xiaoyu`", skill)
+        self.assertIn("不得生成临时回复", skill)
+        self.assertEqual("xiaoyu", binding["slug"])
+        self.assertEqual("version-123", binding["expected_profile_version"])
+        self.assertEqual("environment-or-default", binding["private_root_resolution"])
+
+    def test_written_skill_contains_no_profile_content_or_absolute_path(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "private-root"
+            valid_profile(root)
+            version = module.profile_version(root, "xiaoyu")
+            destination = Path(tmp) / "generated" / "hong-xiaoyu"
+            module.write_thin_skill(destination, "xiaoyu", version)
+            combined = "\n".join(
+                path.read_text(encoding="utf-8") for path in destination.iterdir()
+            )
+            self.assertNotIn("对象甲", combined)
+            self.assertNotIn(str(root), combined)
+            self.assertNotIn("new secret chat", combined)
+            self.assertEqual({"SKILL.md", "binding.json"}, {p.name for p in destination.iterdir()})
+
+
 if __name__ == "__main__":
     unittest.main()
