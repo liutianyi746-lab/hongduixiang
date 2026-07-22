@@ -106,7 +106,7 @@ git status --short
 
 预期：无空白错误；只有本计划内文件发生变化。
 
-- [ ] **步骤 3：提交并推送**
+- [x] **步骤 3：提交并推送**
 
 ```powershell
 git add README.md THIRD_PARTY_NOTICES.md licenses docs/superpowers/plans/2026-07-22-readme-comparison-and-notices.md
