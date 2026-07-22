@@ -16,11 +16,11 @@
 - 创建：`licenses/goutoujunshi-PolyForm-Noncommercial-1.0.0.txt`
 - 创建：`licenses/create-ex-MIT.txt`
 
-- [ ] **步骤 1：复制经核验的上游许可证文本**
+- [x] **步骤 1：复制经核验的上游许可证文本**
 
 从本地已安装的两个参考项目逐字复制许可证，不修改作者、年份、链接或 Required Notice。
 
-- [ ] **步骤 2：验证许可证内容**
+- [x] **步骤 2：验证许可证内容**
 
 运行：
 
@@ -36,7 +36,7 @@ Compare-Object (Get-Content licenses\create-ex-MIT.txt) (Get-Content C:\Users\32
 **文件：**
 - 创建：`THIRD_PARTY_NOTICES.md`
 
-- [ ] **步骤 1：写明来源与适用许可**
+- [x] **步骤 1：写明来源与适用许可**
 
 列出：
 
@@ -48,7 +48,7 @@ Compare-Object (Get-Content licenses\create-ex-MIT.txt) (Get-Content C:\Users\32
 - 方法借鉴不代表复制上游完整知识库、提示词或工具代码；
 - 商业使用者应先确认许可范围并取得必要授权。
 
-- [ ] **步骤 2：检查声明字段**
+- [x] **步骤 2：检查声明字段**
 
 运行：
 
@@ -63,7 +63,7 @@ rg -n "powerycy|therealXiaomanChu|hicccc77/WeFlow|PolyForm Noncommercial|MIT Lic
 **文件：**
 - 修改：`README.md`
 
-- [ ] **步骤 1：添加组合优势章节**
+- [x] **步骤 1：添加组合优势章节**
 
 在“工作方式”和“安装”之间加入：
 
@@ -74,11 +74,11 @@ rg -n "powerycy|therealXiaomanChu|hicccc77/WeFlow|PolyForm Noncommercial|MIT Lic
 
 加入五类方案、七个维度的 Markdown 对比表。
 
-- [ ] **步骤 2：添加来源与许可证章节**
+- [x] **步骤 2：添加来源与许可证章节**
 
 说明项目当前按非商业用途发布，引用 `THIRD_PARTY_NOTICES.md` 及两个许可证文件；同时说明 WeFlow 仅为格式兼容、不复制或捆绑其代码，并声明无官方隶属或背书。
 
-- [ ] **步骤 3：验证 README 结构**
+- [x] **步骤 3：验证 README 结构**
 
 运行 PowerShell，检查章节顺序、两个上游名称、五类方案、七个比较维度、非商业说明和第三方声明链接。
 
@@ -89,7 +89,7 @@ rg -n "powerycy|therealXiaomanChu|hicccc77/WeFlow|PolyForm Noncommercial|MIT Lic
 **文件：**
 - 修改：`docs/superpowers/plans/2026-07-22-readme-comparison-and-notices.md`
 
-- [ ] **步骤 1：运行测试**
+- [x] **步骤 1：运行测试**
 
 ```powershell
 python -m unittest discover -s tests -p "test_*.py" -v
@@ -97,7 +97,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 预期：18 项测试全部通过。
 
-- [ ] **步骤 2：检查差异**
+- [x] **步骤 2：检查差异**
 
 ```powershell
 git diff --check
