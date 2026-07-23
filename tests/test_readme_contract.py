@@ -60,6 +60,22 @@ class ReadmeContractTests(unittest.TestCase):
         ):
             self.assertIn(required, text)
 
+    def test_readme_has_beginner_quickstart_and_daily_usage_examples(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for required in (
+            "## 5 分钟上手",
+            "安装完成后重新启动",
+            "Codex 中输入",
+            "Claude Code 中输入",
+            "/hong-xiaoyu 她说：",
+            "多轮聊天也可以直接粘贴",
+            "这句不像我",
+            "重新学习我的语气",
+            "重新预览并确认",
+            "generate --force",
+        ):
+            self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()
